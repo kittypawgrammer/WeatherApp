@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather_App</title>
+</head>
+
+<body>
+
+    <main id="app">
+
+        <!-- Top Section -->
+        <section id="top-bar">
+            <header>
+                <h1>Weather Forecast</h1>
+                <p>Get real-time weather updates</p>
+
+            </header>
+
+            <!-- Search Bar -->
+            <div id="search-container">
+                <input type="text" id="city-input" placeholder="Search for a city...">
+                <button id="search-btn">🔍</button>
+            </div>
+
+            <!-- Current Location Button -->
+            <div id="location-container">
+                <button id="location-btn">📍 Current Location</button>
+            </div>
+
+        </section>
+
+        <!-- Recent Searches -->
+        <section id="recent-search-section">
+            <label for="recent-cities">Recent Searches:</label>
+            <select id="recent-cities">
+                <option value="">Select a city</option>
+            </select>
+        </section>
+
+        <!-- Middle Section -->
+        <section id="middle-section">
+
+            <!-- Left Card -->
+            <div id="city-time-card">
+                <h2 id="city-name">Athens, Greece</h2>
+                <h1 id="live-time">09:42 AM</h1>
+                <p id="current-date">Thursday, 31 August 2024</p>
+            </div>
+
+            <!-- Weather Details Card -->
+            <div id="weather-card">
+
+                <!-- Temperature Section -->
+                <div id="temp-section">
+                    <h1 id="temperature">24°C</h1>
+
+                    <button id="temp-toggle-btn">°C / °F</button>
+
+                    <p id="feels-like">Feels like: 22°C</p>
+
+                    <div id="sunrise-sunset">
+                        <p>🌅 Sunrise: <span id="sunrise">06:37 AM</span></p>
+                        <p>🌇 Sunset: <span id="sunset">08:37 PM</span></p>
+                    </div>
+                </div>
+
+                <!-- Weather Condition -->
+                <div id="weather-condition-box">
+                    <img id="weather-icon" src="" alt="Weather Icon">
+                    <h2 id="weather-condition">Sunny</h2>
+                </div>
+
+                <!-- Extra Weather Info -->
+                <div id="extra-info">
+                    <p>💧 Humidity: <span id="humidity">41%</span></p>
+                    <p>🌬 Wind Speed: <span id="wind-speed">2 km/h</span></p>
+                    <p>⚙ Pressure: <span id="pressure">997 hPa</span></p>
+                    <p>☀ UV Index: <span id="uv-index">8</span></p>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Alert Section -->
+        <section id="alert-section">
+            <p id="weather-alert">
+                ⚠ Heat Alert! Temperature is expected to be above 40°C.
+            </p>
+        </section>
+
+        <section id="bottom-section">
+
+            <!-- 5 Day Forecast -->
+            <div id="forecast-section">
+                <h2>5-Day Forecast</h2>
+
+                <div id="forecast-cards">
+
+                    <div class="forecast-card">
+                        <img src="" alt="">
+                        <p>32°C</p>
+                        <p>Friday, 1 Sep</p>
+                    </div>
+
+                    <div class="forecast-card">
+                        <img src="" alt="">
+                        <p>29°C</p>
+                        <p>Saturday, 2 Sep</p>
+                    </div>
+
+                    <div class="forecast-card">
+                        <img src="" alt="">
+                        <p>31°C</p>
+                        <p>Sunday, 3 Sep</p>
+                    </div>
+
+                    <div class="forecast-card">
+                        <img src="" alt="">
+                        <p>26°C</p>
+                        <p>Monday, 4 Sep</p>
+                    </div>
+
+                    <div class="forecast-card">
+                        <img src="" alt="">
+                        <p>24°C</p>
+                        <p>Tuesday, 5 Sep</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Hourly Forecast -->
+            <div id="hourly-section">
+                <h2>Hourly Forecast</h2>
+
+                <div id="hourly-cards">
+
+                    <div class="hour-card">
+                        <p>12:00 PM</p>
+                        <img src="" alt="">
+                        <p>28°C</p>
+                        <p>3 km/h</p>
+                    </div>
+
+                    <div class="hour-card">
+                        <p>03:00 PM</p>
+                        <img src="" alt="">
+                        <p>30°C</p>
+                        <p>2 km/h</p>
+                    </div>
+
+                    <div class="hour-card">
+                        <p>06:00 PM</p>
+                        <img src="" alt="">
+                        <p>28°C</p>
+                        <p>2 km/h</p>
+                    </div>
+
+                    <div class="hour-card">
+                        <p>09:00 PM</p>
+                        <img src="" alt="">
+                        <p>25°C</p>
+                        <p>3 km/h</p>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="./src/script.js"></script>
+</body>
+
+</html>
