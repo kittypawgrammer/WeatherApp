@@ -1,3 +1,11 @@
 node_modules/
 .env
 .DS_Store
+
+# AI
+.claude
+.gemini
+.cline
+CLAUDE.md
+AGENTS.md 
+ai_docs
