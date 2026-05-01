@@ -64,9 +64,11 @@ function updateTime(tz) {
 // update UI state
 async function updateUIState(weather) {
     currentWeather = weather;
-
+    console.log(weather);
+    
     if (timeInterval) clearInterval(timeInterval);
     updateTime(weather.tz);
+    
     timeInterval = setInterval(() => {
         updateTime(weather.tz);
     }, 1000);
@@ -90,14 +92,15 @@ async function updateUIState(weather) {
 
         const card = document.createElement("div");
         card.className = "forecast-card flex items-center gap-4";
-
+        
         const img = document.createElement("img");
         img.src = `https:${day.day.condition.icon}`;
-        img.alt = day.day.condition.text;
+        img.alt = day.day.condition.text;   
         img.className = "w-10 h-10 object-contain";
 
         const temp = document.createElement("p");
         temp.className = "forecast-temp font-bold w-14";
+        temp.textContent = `${day.day.avgtemp_c}°C`;
 
         const dateLabel = document.createElement("p");
         dateLabel.className = "text-gray-500 ml-auto";
@@ -109,7 +112,6 @@ async function updateUIState(weather) {
         forecastContainer.appendChild(card);
     });
 
-    updateTempDisplay();
     saveCity(weather.cityName);
     loadRecentCities();
 }
@@ -120,7 +122,7 @@ async function getWeatherFromAPIByCity(city) {
     let response = await fetch(url);
     let data = await response.json();
 
-    console.log(data);
+    console.log("getWeatherFromAPIByCity: ", JSON.stringify(data));
 
     if (data.error) {
         alert("City not found");
@@ -153,7 +155,7 @@ async function getWeatherFromAPIByLatLong(lat, long) {
     let response = await fetch(url);
     let data = await response.json();
 
-    console.log(data);
+    console.log("getWeatherFromAPIByLatLong: ", JSON.stringify(data));
 
     if (data.error) {
         alert("City not found");
@@ -200,21 +202,27 @@ let getDataByCity = async (city) => {
 };
 
 //get current location from browser
-function getCurrentLocation() {
+async function getCurrentLocation() {
     if (!navigator.geolocation) {
         alert("Geolocation not supported");
-        return;
+        return {undefined, undefined};
     }
-    navigator.geolocation.getCurrentPosition((position) => {
-        let lat = position.coords.latitude;
-        let long = position.coords.longitude;
-        getDataByLatLong(lat, long);
-        console.log(lat, long);
-    },
-        () => {
-            alert("Location access denied");
-        }
-    );
+
+    return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const long = position.coords.longitude;
+                console.log("fetched location coordinates:", lat, long);
+                resolve({ lat, long });
+            },
+            () => {
+                console.log("fetch location coordinates failed");
+                alert("Location access denied");
+                reject();
+            }
+        );
+    });
 }
 
 //get data from api
@@ -235,28 +243,39 @@ let getDataByLatLong = async (lat, long) => {
 };
 
 
-// Enter key on input
+// Listner for search bar 
 cityInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
         e.preventDefault();
+
+        // get weather data
         getDataByCity(cityInput.value);
+
         cityInput.value = "";
     }
 });
 
 
-//Recent search
+// Listner for recent cities dropdown
 recentCities.addEventListener("change", (e) => {
     let selectedCity = e.target.value;
     if (selectedCity) {
+        // get weather data
         getDataByCity(selectedCity);
     }
 });
 
-//current location button
-locationBtn.addEventListener("click", () => {
-    getCurrentLocation();
+// listner for current location button
+locationBtn.addEventListener("click", async () => {
+    // fetch lat and long from browser
+    let {lat, long} = await getCurrentLocation();
+    console.log("current location button - coordinates:", lat, long);
+
+    // get weather data
+    getDataByLatLong(lat, long);
 });
+
+
 
 
 loadRecentCities();
