@@ -7,7 +7,7 @@ let recentCities = document.querySelector("#recent-cities");
 
 let timeInterval = null;
 
-//save city in Recent city 
+//Recent city 
 function saveCity(city) {
     // Get old cities from storage
     let cities = localStorage.getItem("recentCities");
@@ -75,13 +75,31 @@ let getData = async (city) => {
             return;
         }
 
-        // document.getElementById("recent-cities");
+        //single object to maintain all weater data from api 
+        function extractWeatherData(data){
+            return {
+                cityName : data.location.name,
+                country : data.location.country,
+                tempC : data.current.temp_c,
+                feelsLikeC : data.current.feelslike_c,
+                sunrise : data.forecast.forecastday[0].astro.sunrise,
+                sunset : data.forecast.forecastday[0].astro.sunset, 
+                humidity: data.current.humidity,
+                windKph :data.current.wind_kph,
+                pressure : data.current.pressure_in,
+                uv: data.current.uv,
+                weatherIcon : data.forecast.forecastday[0].day.condition.icon,
+                weatherCondition: data.forecast.forecastday[0].day.condition.text 
+            }
+        }
+
+        const weather = extractWeatherData(data);
 
         //set current time based on city's timezone
-        const tz = data.location.tz_id;
-
         function updateTime() {
+            const tz = data.location.tz_id;
             const now = new Date();
+        
 
             document.getElementById("live-time").innerText =
                 now.toLocaleTimeString('en-US', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: true });
@@ -96,40 +114,39 @@ let getData = async (city) => {
 
         timeInterval = setInterval(updateTime, 1000);
 
-        //get all data from api:
-
+        //get all data from api
         document.getElementById("city-name").innerText =
-            `${data.location.name}, ${data.location.country}`;
+            `${weather.name}, ${weather.country}`;
 
         document.getElementById("temperature").innerText =
-            `${data.current.temp_c}` + "°C";
+            `${weather.temp_c}` + "°C";
 
         document.getElementById("feels-like").innerText =
-            `Feels-like:` + `${data.current.feelslike_c}`;
+            `Feels-like:` + `${weather.feelslike_c}`;
 
         document.getElementById("sunrise").innerText =
-            `${data.forecast.forecastday[0].astro.sunrise}`;
+            `${weather.sunrise}`;
 
         document.getElementById("sunset").innerText =
-            `${data.forecast.forecastday[0].astro.sunset}`;
+            `${weather.sunset}`;
 
         document.getElementById("humidity").innerText =
-            `${data.current.humidity}` + "%";
+            `${weather.humidity}` + "%";
 
         document.getElementById("wind-speed").innerText =
-            `${data.current.wind_kph}` + "kph";
+            `${weather.wind_kph}` + "kph";
 
         document.getElementById("pressure").innerText =
-            `${data.current.pressure_in}` + " in";
+            `${weather.pressure_in}` + " in";
 
         document.getElementById("uv-index").innerText =
-            `${data.current.uv}`;
+            `${weather.uv}`;
 
         document.getElementById("weather-icon").src =
-             "https:" + data.forecast.forecastday[0].day.condition.icon;
+             "https:" + weather.icon;
 
          document.getElementById("weather-condition").innerText =
-            `${data.forecast.forecastday[0].day.condition.text}`;
+            `${weather.text}`;
 
         // 5-day forecast
         const forecastContainer = document.getElementById("forecast-cards");
