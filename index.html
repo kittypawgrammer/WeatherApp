@@ -8,25 +8,24 @@
     <link rel="stylesheet" href="./src/output.css">
 </head>
 
-<body class="bg-gray-200 min-h-screen p-6 font-sans">
+<body class="bg-gray-200 min-h-screen p-3 sm:p-6 font-sans">
 
     <!-- Header Section -->
-    <header id="header-container" class="text-center mb-6">
-        <h1 class="text-5xl font-bold mb-2">Weather Forecast</h1>
-        <p class="text-xl font-semibold">Get real-time weather updates</p>
+    <header id="header-container" class="text-center mb-4 sm:mb-6">
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2">Weather Forecast</h1>
+        <p class="text-base sm:text-xl font-semibold">Get real-time weather updates</p>
     </header>
 
     <!-- Top Search Bar -->
-    <div class="flex items-center gap-4 mb-6 max-w-6xl mx-auto">
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6 max-w-6xl mx-auto">
 
         <div class="relative flex-1">
             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">🔍</span>
             <input type="text" id="city-input" placeholder="Search for your preferred city..." class="w-full pl-12 pr-4 py-3 rounded-full bg-white border border-gray-300 shadow-sm
                        focus:outline-none focus:ring-2 focus:ring-green-400 text-gray-600">
-    
         </div>
 
-        <button id="location-btn" class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white
+        <button id="location-btn" class="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white
                    px-6 py-3 rounded-full font-semibold shadow whitespace-nowrap transition-colors">
             📍 Current Location
         </button>
@@ -34,7 +33,7 @@
     </div>
 
     <!-- Recent Searches -->
-    <div id="recent-search-section" class="max-w-6xl mx-auto mb-4 flex items-center gap-2 text-sm text-gray-500">
+    <div id="recent-search-section" class="max-w-6xl mx-auto mb-4 flex flex-wrap items-center gap-2 text-sm text-gray-500">
         <label for="recent-cities" class="font-medium">Recent Searches:</label>
         <select id="recent-cities" class="border border-gray-300 rounded-lg px-2 py-1 text-gray-600 bg-white">
             <option value="">Select a city</option>
@@ -42,21 +41,21 @@
     </div>
 
     <!-- Middle Section -->
-    <div id="middle-section" class="grid grid-cols-2 gap-4 mb-4 max-w-6xl mx-auto">
+    <div id="middle-section" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 max-w-6xl mx-auto">
 
         <!-- Left Card: City / Time -->
-        <div id="city-time-card" class="bg-white rounded-3xl p-10 shadow-md flex flex-col items-center justify-center">
-            <h2 id="city-name" class="text-3xl font-bold mb-6">Athens, Greece</h2>
-            <h1 id="live-time" class="text-7xl font-bold tracking-tight">09:42 AM</h1>
-            <p id="current-date" class="text-gray-400 mt-3 text-lg">Thursday, 31 August 2024</p>
+        <div id="city-time-card" class="bg-white rounded-3xl p-6 sm:p-10 shadow-md flex flex-col items-center justify-center">
+            <h2 id="city-name" class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-center">Athens, Greece</h2>
+            <h1 id="live-time" class="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight">09:42 AM</h1>
+            <p id="current-date" class="text-gray-400 mt-3 text-base sm:text-lg text-center">Thursday, 31 August 2024</p>
         </div>
 
         <!-- Right Card: Weather Details -->
-        <div id="weather-card" class="bg-white rounded-3xl p-8 shadow-md flex items-center gap-8">
+        <div id="weather-card" class="bg-white rounded-3xl p-6 sm:p-8 shadow-md flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
 
             <!-- Temperature + Feels Like + Sunrise/Sunset -->
-            <div id="temp-section" class="flex flex-col gap-2 min-w-fit">
-                <h1 id="temperature" class="text-5xl font-bold">24°C</h1>
+            <div id="temp-section" class="flex flex-col gap-2 min-w-fit items-center sm:items-start">
+                <h1 id="temperature" class="text-4xl sm:text-5xl font-bold">24°C</h1>
                 <button id="temp-toggle-btn" class="text-xs text-gray-400 underline self-start">°C / °F</button>
                 <p id="feels-like" class="text-gray-500 text-sm font-bold">
                     Feels like: <span class="font-bold text-gray-800">22°C</span>
@@ -69,26 +68,26 @@
 
             <!-- Weather Icon + Condition -->
             <div id="weather-condition-box" class="flex flex-col items-center flex-1">
-                <img id="weather-icon" src="" alt="Weather Icon" class="w-28 h-28 object-contain">
-                <h2 id="weather-condition" class="text-xl font-bold mt-2 text-center">Sunny</h2>
+                <img id="weather-icon" src="" alt="Weather Icon" class="w-20 h-20 sm:w-28 sm:h-28 object-contain">
+                <h2 id="weather-condition" class="text-lg sm:text-xl font-bold mt-2 text-center">Sunny</h2>
             </div>
 
             <!-- 2×2 Stats Grid -->
-            <div id="extra-info" class="grid grid-cols-2 gap-x-8 gap-y-5 text-center">
+            <div id="extra-info" class="grid grid-cols-2 gap-x-6 sm:gap-x-8 gap-y-4 sm:gap-y-5 text-center">
                 <div>
-                    <p id="humidity" class="text-xl font-bold">41%</p>
+                    <p id="humidity" class="text-lg sm:text-xl font-bold">41%</p>
                     <p class="text-gray-400 text-xs mt-1">Humidity</p>
                 </div>
                 <div>
-                    <p id="wind-speed" class="text-xl font-bold">2 kph</p>
+                    <p id="wind-speed" class="text-lg sm:text-xl font-bold">2 kph</p>
                     <p class="text-gray-400 text-xs mt-1">Wind Speed</p>
                 </div>
                 <div>
-                    <p id="pressure" class="text-xl font-bold">997 in</p>
+                    <p id="pressure" class="text-lg sm:text-xl font-bold">997 in</p>
                     <p class="text-gray-400 text-xs mt-1">Pressure</p>
                 </div>
                 <div>
-                    <p id="uv-index" class="text-xl font-bold">8</p>
+                    <p id="uv-index" class="text-lg sm:text-xl font-bold">8</p>
                     <p class="text-gray-400 text-xs mt-1">UV</p>
                 </div>
             </div>
@@ -105,86 +104,86 @@
     </section>
 
     <!-- Bottom Section -->
-    <div id="bottom-section" class="grid grid-cols-5 gap-4 max-w-6xl mx-auto">
+    <div id="bottom-section" class="grid grid-cols-1 md:grid-cols-5 gap-4 max-w-6xl mx-auto">
 
         <!-- 5-Day Forecast -->
-        <div id="forecast-section" class="col-span-2 bg-white rounded-3xl p-6 shadow-md">
-            <h2 class="text-2xl font-bold mb-5">5 Days Forecast:</h2>
+        <div id="forecast-section" class="md:col-span-2 bg-white rounded-3xl p-6 shadow-md">
+            <h2 class="text-xl sm:text-2xl font-bold mb-5">5 Days Forecast:</h2>
             <div id="forecast-cards" class="space-y-4">
 
                 <div class="forecast-card flex items-center gap-4">
                     <img src="" alt="" class="w-10 h-10 object-contain">
                     <p class="font-bold w-14">32°C</p>
-                    <p class="text-gray-500 ml-auto">Friday, 1 Sep</p>
+                    <p class="text-gray-500 ml-auto text-sm sm:text-base">Friday, 1 Sep</p>
                 </div>
 
                 <div class="forecast-card flex items-center gap-4">
                     <img src="" alt="" class="w-10 h-10 object-contain">
                     <p class="font-bold w-14">29°C</p>
-                    <p class="text-gray-500 ml-auto">Saturday, 2 Sep</p>
+                    <p class="text-gray-500 ml-auto text-sm sm:text-base">Saturday, 2 Sep</p>
                 </div>
 
                 <div class="forecast-card flex items-center gap-4">
                     <img src="" alt="" class="w-10 h-10 object-contain">
                     <p class="font-bold w-14">31°C</p>
-                    <p class="text-gray-500 ml-auto">Sunday, 3 Sep</p>
+                    <p class="text-gray-500 ml-auto text-sm sm:text-base">Sunday, 3 Sep</p>
                 </div>
 
                 <div class="forecast-card flex items-center gap-4">
                     <img src="" alt="" class="w-10 h-10 object-contain">
                     <p class="font-bold w-14">26°C</p>
-                    <p class="text-gray-500 ml-auto">Monday, 4 Sep</p>
+                    <p class="text-gray-500 ml-auto text-sm sm:text-base">Monday, 4 Sep</p>
                 </div>
 
                 <div class="forecast-card flex items-center gap-4">
                     <img src="" alt="" class="w-10 h-10 object-contain">
                     <p class="font-bold w-14">24°C</p>
-                    <p class="text-gray-500 ml-auto">Tuesday, 5 Sep</p>
+                    <p class="text-gray-500 ml-auto text-sm sm:text-base">Tuesday, 5 Sep</p>
                 </div>
 
             </div>
         </div>
 
         <!-- Hourly Forecast (3/5 width) -->
-        <div id="hourly-section" class="col-span-3 bg-white rounded-3xl p-6 shadow-md">
-            <h2 class="text-2xl font-bold mb-5">Hourly Forecast:</h2>
+        <div id="hourly-section" class="md:col-span-3 bg-white rounded-3xl p-6 shadow-md">
+            <h2 class="text-xl sm:text-2xl font-bold mb-5">Hourly Forecast:</h2>
             <div id="hourly-cards" class="flex gap-3 overflow-x-auto pb-2">
 
                 <div class="hour-card flex flex-col items-center bg-linear-to-b from-amber-400 to-amber-300
-                            rounded-3xl px-5 py-5 min-w-25 gap-2 shrink-0">
-                    <p class="font-bold text-white text-lg">12:00 PM</p>
+                            rounded-3xl px-4 sm:px-5 py-5 min-w-24 sm:min-w-25 gap-2 shrink-0">
+                    <p class="font-bold text-white text-base sm:text-lg">12:00 PM</p>
                     <img src="" alt="" class="w-10 h-10 object-contain">
                     <p class="text-white font-bold">28°C</p>
                     <p class="text-white text-sm">3 km/h</p>
                 </div>
 
                 <div class="hour-card flex flex-col items-center bg-linear-to-b from-amber-400 to-amber-300
-                            rounded-3xl px-5 py-5 min-w-25 gap-2 shrink-0">
-                    <p class="font-bold text-white text-lg">03:00 PM</p>
+                            rounded-3xl px-4 sm:px-5 py-5 min-w-24 sm:min-w-25 gap-2 shrink-0">
+                    <p class="font-bold text-white text-base sm:text-lg">03:00 PM</p>
                     <img src="" alt="" class="w-10 h-10 object-contain">
                     <p class="text-white font-bold">30°C</p>
                     <p class="text-white text-sm">2 km/h</p>
                 </div>
 
                 <div class="hour-card flex flex-col items-center bg-linear-to-b from-amber-400 to-amber-300
-                            rounded-3xl px-5 py-5 min-w-25 gap-2 shrink-0">
-                    <p class="font-bold text-white text-lg">06:00 PM</p>
+                            rounded-3xl px-4 sm:px-5 py-5 min-w-24 sm:min-w-25 gap-2 shrink-0">
+                    <p class="font-bold text-white text-base sm:text-lg">06:00 PM</p>
                     <img src="" alt="" class="w-10 h-10 object-contain">
                     <p class="text-white font-bold">28°C</p>
                     <p class="text-white text-sm">2 km/h</p>
                 </div>
 
                 <div class="hour-card flex flex-col items-center bg-linear-to-b from-slate-600 to-slate-800
-                            rounded-3xl px-5 py-5 min-w-25 gap-2 shrink-0">
-                    <p class="font-bold text-white text-lg">09:00 PM</p>
+                            rounded-3xl px-4 sm:px-5 py-5 min-w-24 sm:min-w-25 gap-2 shrink-0">
+                    <p class="font-bold text-white text-base sm:text-lg">09:00 PM</p>
                     <img src="" alt="" class="w-10 h-10 object-contain">
                     <p class="text-white font-bold">25°C</p>
                     <p class="text-white text-sm">3 km/h</p>
                 </div>
 
                 <div class="hour-card flex flex-col items-center bg-linear-to-b from-slate-600 to-slate-800
-                            rounded-3xl px-5 py-5 min-w-25 gap-2 shrink-0">
-                    <p class="font-bold text-white text-lg">12:00 AM</p>
+                            rounded-3xl px-4 sm:px-5 py-5 min-w-24 sm:min-w-25 gap-2 shrink-0">
+                    <p class="font-bold text-white text-base sm:text-lg">12:00 AM</p>
                     <img src="" alt="" class="w-10 h-10 object-contain">
                     <p class="text-white font-bold">22°C</p>
                     <p class="text-white text-sm">3 km/h</p>
