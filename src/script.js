@@ -36,8 +36,6 @@ function saveCity(city) {
 
     // Save back to localStorage
     localStorage.setItem("recentCities", JSON.stringify(cities));
-
-
 }
 
 // added cities in select option
@@ -55,8 +53,156 @@ function loadRecentCities() {
     });
 }
 
+//set current time based on city's timezone
+function updateTime() {
+    const tz = data.location.tz_id;
+    const now = new Date();
+
+
+    document.getElementById("live-time").innerText =
+        now.toLocaleTimeString('en-US', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: true });
+
+    document.getElementById("current-date").innerText =
+        now.toLocaleDateString('en-US', { timeZone: tz, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+// update UI state
+async function updateUIState(weather) {
+
+    // refresh every minute
+    if (timeInterval) clearInterval(timeInterval);
+    updateTime();
+    timeInterval = setInterval(updateTime, 1000);
+
+
+    document.getElementById("city-name").innerText =
+        `${weather.name}, ${weather.country}`;
+
+    document.getElementById("temperature").innerText =
+        `${weather.temp_c}` + "°C";
+
+    document.getElementById("feels-like").innerText =
+        `Feels-like:` + `${weather.feelslike_c}`;
+
+    document.getElementById("sunrise").innerText =
+        `${weather.sunrise}`;
+
+    document.getElementById("sunset").innerText =
+        `${weather.sunset}`;
+
+    document.getElementById("humidity").innerText =
+        `${weather.humidity}` + "%";
+
+    document.getElementById("wind-speed").innerText =
+        `${weather.wind_kph}` + "kph";
+
+    document.getElementById("pressure").innerText =
+        `${weather.pressure_in}` + " in";
+
+    document.getElementById("uv-index").innerText =
+        `${weather.uv}`;
+
+    document.getElementById("weather-icon").src =
+        "https:" + weather.icon;
+
+    document.getElementById("weather-condition").innerText =
+        `${weather.text}`;
+
+    // 5-day forecast
+    const forecastContainer = document.getElementById("forecast-cards");
+    forecastContainer.innerHTML = "";
+
+    data.forecast.forecastday.forEach(day => {
+        const date = new Date(day.date + "T12:00:00");
+        const label = date.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'short' });
+
+        const card = document.createElement("div");
+        card.className = "forecast-card flex items-center gap-4";
+
+        const img = document.createElement("img");
+        img.src = `https:${day.day.condition.icon}`;
+        img.alt = day.day.condition.text;
+        img.className = "w-10 h-10 object-contain";
+
+        const temp = document.createElement("p");
+        temp.className = "font-bold w-14";
+        temp.textContent = `${day.day.avgtemp_c}°C`;
+
+        const dateLabel = document.createElement("p");
+        dateLabel.className = "text-gray-500 ml-auto";
+        dateLabel.textContent = label;
+
+        card.appendChild(img);
+        card.appendChild(temp);
+        card.appendChild(dateLabel);
+        forecastContainer.appendChild(card);
+    });
+
+    saveCity(city);
+    loadRecentCities();
+}
+
+// API call
+async function getWeatherFromAPIByCity(city) {
+    let url = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city}&days=5&aqi=yes&alerts=yes`;
+    let response = await fetch(url);
+    let data = await response.json();
+
+    console.log(data);
+
+    if (data.error) {
+        alert("City not found");
+        return;
+    }
+
+    return {
+        cityName : data.location.name,
+        country : data.location.country,
+        tempC : data.current.temp_c,
+        feelsLikeC : data.current.feelslike_c,
+        sunrise : data.forecast.forecastday[0].astro.sunrise,
+        sunset : data.forecast.forecastday[0].astro.sunset, 
+        humidity: data.current.humidity,
+        windKph :data.current.wind_kph,
+        pressure : data.current.pressure_in,
+        uv: data.current.uv,
+        weatherIcon : data.forecast.forecastday[0].day.condition.icon,
+        weatherCondition: data.forecast.forecastday[0].day.condition.text 
+    };
+}
+
+// API call
+async function getWeatherFromAPIByLatLong(lat, long) {
+    let url = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${lat},${long}&days=5&aqi=yes&alerts=yes`;
+    let response = await fetch(url);
+    let data = await response.json();
+
+    console.log(data);
+
+    if (data.error) {
+        alert("City not found");
+        return;
+    }
+
+    return {
+        cityName : data.location.name,
+        country : data.location.country,
+        tempC : data.current.temp_c,
+        feelsLikeC : data.current.feelslike_c,
+        sunrise : data.forecast.forecastday[0].astro.sunrise,
+        sunset : data.forecast.forecastday[0].astro.sunset, 
+        humidity: data.current.humidity,
+        windKph :data.current.wind_kph,
+        pressure : data.current.pressure_in,
+        uv: data.current.uv,
+        weatherIcon : data.forecast.forecastday[0].day.condition.icon,
+        weatherCondition: data.forecast.forecastday[0].day.condition.text 
+    };
+}
+
+
 //get data from api 
-let getData = async (city) => {
+let getDataByCity = async (city) => {
 
     if (!city) {
         alert("Please enter a city name");
@@ -64,123 +210,10 @@ let getData = async (city) => {
     }
 
     try {
-        let url = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city}&days=5&aqi=yes&alerts=yes`;
-        let response = await fetch(url);
-        let data = await response.json();
-
-        console.log(data);
-
-        if (data.error) {
-            alert("City not found");
-            return;
-        }
-
-        //single object to maintain all weater data from api 
-        function extractWeatherData(data){
-            return {
-                cityName : data.location.name,
-                country : data.location.country,
-                tempC : data.current.temp_c,
-                feelsLikeC : data.current.feelslike_c,
-                sunrise : data.forecast.forecastday[0].astro.sunrise,
-                sunset : data.forecast.forecastday[0].astro.sunset, 
-                humidity: data.current.humidity,
-                windKph :data.current.wind_kph,
-                pressure : data.current.pressure_in,
-                uv: data.current.uv,
-                weatherIcon : data.forecast.forecastday[0].day.condition.icon,
-                weatherCondition: data.forecast.forecastday[0].day.condition.text 
-            }
-        }
-
-        const weather = extractWeatherData(data);
-
-        //set current time based on city's timezone
-        function updateTime() {
-            const tz = data.location.tz_id;
-            const now = new Date();
         
+        let weather = await getWeatherFromAPIByCity(city);
 
-            document.getElementById("live-time").innerText =
-                now.toLocaleTimeString('en-US', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: true });
-
-            document.getElementById("current-date").innerText =
-                now.toLocaleDateString('en-US', { timeZone: tz, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-        }
-
-        if (timeInterval) clearInterval(timeInterval);
-
-        updateTime();
-
-        timeInterval = setInterval(updateTime, 1000);
-
-        //get all data from api
-        document.getElementById("city-name").innerText =
-            `${weather.name}, ${weather.country}`;
-
-        document.getElementById("temperature").innerText =
-            `${weather.temp_c}` + "°C";
-
-        document.getElementById("feels-like").innerText =
-            `Feels-like:` + `${weather.feelslike_c}`;
-
-        document.getElementById("sunrise").innerText =
-            `${weather.sunrise}`;
-
-        document.getElementById("sunset").innerText =
-            `${weather.sunset}`;
-
-        document.getElementById("humidity").innerText =
-            `${weather.humidity}` + "%";
-
-        document.getElementById("wind-speed").innerText =
-            `${weather.wind_kph}` + "kph";
-
-        document.getElementById("pressure").innerText =
-            `${weather.pressure_in}` + " in";
-
-        document.getElementById("uv-index").innerText =
-            `${weather.uv}`;
-
-        document.getElementById("weather-icon").src =
-             "https:" + weather.icon;
-
-         document.getElementById("weather-condition").innerText =
-            `${weather.text}`;
-
-        // 5-day forecast
-        const forecastContainer = document.getElementById("forecast-cards");
-        forecastContainer.innerHTML = "";
-
-        data.forecast.forecastday.forEach(day => {
-            const date = new Date(day.date + "T12:00:00");
-            const label = date.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'short' });
-
-            const card = document.createElement("div");
-            card.className = "forecast-card flex items-center gap-4";
-
-            const img = document.createElement("img");
-            img.src = `https:${day.day.condition.icon}`;
-            img.alt = day.day.condition.text;
-            img.className = "w-10 h-10 object-contain";
-
-            const temp = document.createElement("p");
-            temp.className = "font-bold w-14";
-            temp.textContent = `${day.day.avgtemp_c}°C`;
-
-            const dateLabel = document.createElement("p");
-            dateLabel.className = "text-gray-500 ml-auto";
-            dateLabel.textContent = label;
-
-            card.appendChild(img);
-            card.appendChild(temp);
-            card.appendChild(dateLabel);
-            forecastContainer.appendChild(card);
-        });
-
-        saveCity(city);
-        loadRecentCities();
-
+        await updateUIState(weather);
 
     } 
     catch (error) {
@@ -188,11 +221,32 @@ let getData = async (city) => {
     }
 };
 
+//get data from api 
+let getDataByLatLong = async (lat, long) => {
+
+    if (!lat || !long) {
+        alert("Current location not detected");
+        return;
+    }
+
+    try {
+        
+        let weather = await getWeatherFromAPIByLatLong(lat, long);
+
+        await updateUIState(weather);
+
+    } 
+    catch (error) {
+        console.log("Error:", error);
+    }
+};
+
+
 // Enter key on input
 cityInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
         e.preventDefault();
-        getData(cityInput.value);
+        getDataByCity(cityInput.value);
         cityInput.value = "";
     }
 });
@@ -203,7 +257,7 @@ recentCities.addEventListener("change", (e) => {
     let selectedCity = e.target.value;
 
     if (selectedCity) {
-        getData(selectedCity);
+        getDataByCity(selectedCity);
     }
 });
 
