@@ -7,6 +7,7 @@ let recentCities = document.querySelector("#recent-cities");
 
 let timeInterval = null;
 
+//save city in Recent city 
 function saveCity(city) {
     // Get old cities from storage
     let cities = localStorage.getItem("recentCities");
@@ -39,6 +40,7 @@ function saveCity(city) {
 
 }
 
+// added cities in select option
 function loadRecentCities() {
     let cities = JSON.parse(localStorage.getItem("recentCities")) || [];
 
@@ -53,6 +55,7 @@ function loadRecentCities() {
     });
 }
 
+//get data from api 
 let getData = async (city) => {
 
     if (!city) {
@@ -162,11 +165,10 @@ let getData = async (city) => {
         loadRecentCities();
 
 
-    } catch (error) {
+    } 
+    catch (error) {
         console.log("Error:", error);
     }
-
-
 };
 
 // Enter key on input
