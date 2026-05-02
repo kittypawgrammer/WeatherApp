@@ -114,8 +114,42 @@ async function updateUIState(weather) {
         forecastContainer.appendChild(card);
     });
 
+    renderHourlyCards(weather.hourly);
+
     saveCity(weather.cityName);
     loadRecentCities();
+}
+
+function renderHourlyCards(hourly) {
+    const container = document.getElementById("hourly-cards");
+    container.innerHTML = "";
+
+    hourly.forEach(hour => {
+        const hourNum = parseInt(hour.time.split(" ")[1].split(":")[0]);
+        const isDay = hourNum >= 6 && hourNum < 20;
+
+        const gradientClass = isDay
+            ? "from-amber-400 to-amber-300"
+            : "from-slate-600 to-slate-800";
+
+        const timeLabel = new Date(hour.time).toLocaleTimeString('en-US', {
+            hour: '2-digit', minute: '2-digit', hour12: true
+        });
+
+        const temp = isCelsius ? `${hour.temp_c}°C` : `${hour.temp_f}°F`;
+
+        const card = document.createElement("div");
+        card.className = `hour-card flex flex-col items-center bg-gradient-to-b ${gradientClass} rounded-3xl px-4 sm:px-5 py-5 min-w-24 sm:min-w-25 gap-2 shrink-0`;
+
+        card.innerHTML = `
+            <p class="font-bold text-white text-base sm:text-lg">${timeLabel}</p>
+            <img src="https:${hour.condition.icon}" alt="${hour.condition.text}" class="w-10 h-10 object-contain">
+            <p class="text-white font-bold">${temp}</p>
+            <p class="text-white text-sm">${hour.wind_kph} km/h</p>
+        `;
+
+        container.appendChild(card);
+    });
 }
 
 // API (city)
@@ -147,7 +181,8 @@ async function getWeatherFromAPIByCity(city) {
         weatherIcon: data.current.condition.icon,
         weatherCondition: data.current.condition.text,
         tz: data.location.tz_id,
-        forecast: data.forecast.forecastday
+        forecast: data.forecast.forecastday,
+        hourly: data.forecast.forecastday[0].hour
     };
 }
 
@@ -180,7 +215,8 @@ async function getWeatherFromAPIByLatLong(lat, long) {
         weatherIcon: data.current.condition.icon,
         weatherCondition: data.current.condition.text,
         tz: data.location.tz_id,
-        forecast: data.forecast.forecastday
+        forecast: data.forecast.forecastday,
+        hourly: data.forecast.forecastday[0].hour
     };
 }
 
