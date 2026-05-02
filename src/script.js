@@ -5,6 +5,11 @@ let searchBtn = document.querySelector("#search-btn");
 let recentCities = document.querySelector("#recent-cities");
 let locationBtn = document.querySelector("#location-btn");
 let tempToggleBtn = document.querySelector("#temp-toggle-btn");
+let alertBox = document.getElementById("weather-alert");
+let alertTitle = document.getElementById("alert-title");
+let alertDesc = document.getElementById("alert-desc");
+let alertDescToggle = document.getElementById("alert-desc-toggle");
+
 
 let isCelsius = true;
 let currentWeather = null;
@@ -83,6 +88,7 @@ async function updateUIState(weather) {
     document.getElementById("pressure").innerText = `${weather.pressure} in`;
     document.getElementById("weather-icon").src = "https:" + weather.weatherIcon;
     document.getElementById("weather-condition").innerText = weather.weatherCondition;
+    
 
     // 5-day forecast
     const forecastContainer = document.getElementById("forecast-cards");
@@ -114,7 +120,41 @@ async function updateUIState(weather) {
         forecastContainer.appendChild(card);
     });
 
+    //alert
     renderHourlyCards(weather.hourly);
+
+    if (weather.alerts && weather.alerts.length > 0) {
+        const alert = weather.alerts[0];
+
+        alertTitle.innerText = alert.headline || alert.event;
+        alertDesc.innerText = alert.desc;
+
+        const isLong = alert.desc.length > 100;
+        alertDesc.classList.toggle("line-clamp-3", isLong);
+        alertDescToggle.classList.toggle("hidden", !isLong);
+        alertDescToggle.textContent = "show more";
+
+        alertDescToggle.onclick = () => {
+            const collapsed = alertDesc.classList.toggle("line-clamp-3");
+            alertDescToggle.textContent = collapsed ? "show more" : "show less";
+        };
+
+        const severity = alert.severity?.toLowerCase();
+        alertBox.className = "p-4 rounded-xl mb-4";
+
+        if (severity === "severe") {
+            alertBox.classList.add("bg-red-200", "text-red-900");
+        } else if (severity === "moderate") {
+            alertBox.classList.add("bg-yellow-200", "text-yellow-900");
+        } else {
+            alertBox.classList.add("bg-blue-200", "text-blue-900");
+        }
+
+        alertBox.classList.remove("hidden");
+    } else {
+        alertBox.classList.add("hidden");
+    }
+
 
     saveCity(weather.cityName);
     loadRecentCities();
@@ -182,7 +222,8 @@ async function getWeatherFromAPIByCity(city) {
         weatherCondition: data.current.condition.text,
         tz: data.location.tz_id,
         forecast: data.forecast.forecastday,
-        hourly: data.forecast.forecastday[0].hour
+        hourly: data.forecast.forecastday[0].hour,
+        alerts: data.alerts?.alert || []
     };
 }
 
@@ -216,7 +257,8 @@ async function getWeatherFromAPIByLatLong(lat, long) {
         weatherCondition: data.current.condition.text,
         tz: data.location.tz_id,
         forecast: data.forecast.forecastday,
-        hourly: data.forecast.forecastday[0].hour
+        hourly: data.forecast.forecastday[0].hour,
+        alerts: data.alerts?.alert || []
     };
 }
 
