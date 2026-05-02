@@ -40,7 +40,8 @@ Displays weather forecast cards including:
 - Shows alerts for extreme temperatures.
 
 ### 🎨 Dynamic UI
-- Changes background dynamically according to weather condition.
+- Animated SVG weather scenes render based on current conditions (rain streaks, falling snow, twinkling stars, lightning, drifting clouds, fog, wind lines, sun rays).
+- Gradient background layer pairs with each scene for 9 distinct weather states: Sunny, Night, Rain, Thunderstorm, Snow, Fog, Windy, Cloudy Day, Cloudy Night.
 
 ### 📱 Responsive Design
 Optimized for:
