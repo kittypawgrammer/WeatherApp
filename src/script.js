@@ -13,6 +13,25 @@ let alertDescToggle = document.getElementById("alert-desc-toggle");
 
 let isCelsius = true;
 let currentWeather = null;
+
+function showError(message) {
+    const toast = document.getElementById("error-toast");
+    const msg = document.getElementById("error-toast-msg");
+    msg.textContent = message;
+    toast.classList.remove("hidden");
+    toast.classList.add("flex");
+    clearTimeout(showError._timer);
+    showError._timer = setTimeout(() => {
+        toast.classList.add("hidden");
+        toast.classList.remove("flex");
+    }, 3000);
+}
+
+document.getElementById("error-toast-close").addEventListener("click", () => {
+    const toast = document.getElementById("error-toast");
+    toast.classList.add("hidden");
+    toast.classList.remove("flex");
+});
 let timeInterval = null;
 
 tempToggleBtn.addEventListener("click", () => {
@@ -489,7 +508,7 @@ async function getWeatherFromAPIByCity(city) {
     console.log("getWeatherFromAPIByCity: ", JSON.stringify(data));
 
     if (data.error) {
-        alert("City not found");
+        showError("City not found");
         return;
     }
 
@@ -525,7 +544,7 @@ async function getWeatherFromAPIByLatLong(lat, long) {
     console.log("getWeatherFromAPIByLatLong: ", JSON.stringify(data));
 
     if (data.error) {
-        alert("City not found");
+        showError("City not found");
         return;
     }
 
@@ -557,7 +576,7 @@ async function getWeatherFromAPIByLatLong(lat, long) {
 let getDataByCity = async (city) => {
 
     if (!city) {
-        alert("Please enter a city name");
+        showError("Please enter a city name");
         return;
     }
 
@@ -574,7 +593,7 @@ let getDataByCity = async (city) => {
 //get current location from browser
 async function getCurrentLocation() {
     if (!navigator.geolocation) {
-        alert("Geolocation not supported");
+        showError("Geolocation is not supported by your browser");
         return {undefined, undefined};
     }
 
@@ -588,7 +607,7 @@ async function getCurrentLocation() {
             },
             () => {
                 console.log("fetch location coordinates failed");
-                alert("Location access denied");
+                showError("Location access denied");
                 reject();
             }
         );
@@ -599,7 +618,7 @@ async function getCurrentLocation() {
 let getDataByLatLong = async (lat, long) => {
 
     if (!lat || !long) {
-        alert("Current location not detected");
+        showError("Could not detect current location");
         return;
     }
 
