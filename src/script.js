@@ -15,6 +15,12 @@ let isCelsius = true;
 let currentWeather = null;
 let timeInterval = null;
 
+tempToggleBtn.addEventListener("click", () => {
+    if (!currentWeather) return;
+    isCelsius = !isCelsius;
+    renderTemperatures(currentWeather);
+});
+
 const WeatherState = {
     THUNDERSTORM:  "thunderstorm",
     SNOW:          "snow",
@@ -331,6 +337,23 @@ function updateTime(tz) {
 }
 
 
+function renderTemperatures(weather) {
+    const temp = isCelsius ? `${weather.tempC} °C` : `${weather.tempF} °F`;
+    const feelsLike = isCelsius ? `${weather.feelsLikeC} °C` : `${weather.feelsLikeF} °F`;
+
+    document.getElementById("temperature").innerText = temp;
+    document.getElementById("feels-like").innerText = `Feels-like: ${feelsLike}`;
+
+    document.querySelectorAll(".forecast-temp").forEach((el, i) => {
+        const day = weather.forecast[i];
+        if (day) el.textContent = isCelsius ? `${day.day.avgtemp_c}°C` : `${day.day.avgtemp_f}°F`;
+    });
+
+    renderHourlyCards(weather.hourly);
+
+    tempToggleBtn.textContent = isCelsius ? "°C / °F" : "°F / °C";
+}
+
 // update UI state
 async function updateUIState(weather) {
     currentWeather = weather;
@@ -346,8 +369,6 @@ async function updateUIState(weather) {
     }, 1000);
 
     document.getElementById("city-name").innerText = `${weather.cityName}, ${weather.country}`;
-    document.getElementById("temperature").innerText = `${weather.tempC}%`;
-    document.getElementById("feels-like").innerText = `Feels-like: ` + `${weather.feelsLikeC}%`;
     document.getElementById("sunrise").innerText = weather.sunrise;
     document.getElementById("sunset").innerText = weather.sunset;
     document.getElementById("humidity").innerText = `${weather.humidity}%`;
@@ -375,7 +396,7 @@ async function updateUIState(weather) {
 
         const temp = document.createElement("p");
         temp.className = "forecast-temp font-bold w-14";
-        temp.textContent = `${day.day.avgtemp_c}°C`;
+        temp.textContent = "";
 
         const dateLabel = document.createElement("p");
         dateLabel.className = "text-gray-500 ml-auto";
@@ -388,7 +409,7 @@ async function updateUIState(weather) {
     });
 
     //alert
-    renderHourlyCards(weather.hourly);
+    renderTemperatures(weather);
 
     if (weather.alerts && weather.alerts.length > 0) {
         const alert = weather.alerts[0];
