@@ -1,3 +1,4 @@
+// Note: This added here for demo purpose. In actual application it should be in some secret or .env
 const API_KEY = "20dbdf7e66e949ee83982724263004";
 
 let cityInput = document.querySelector("#city-input");
