@@ -15,6 +15,271 @@ let isCelsius = true;
 let currentWeather = null;
 let timeInterval = null;
 
+const WeatherState = {
+    THUNDERSTORM:  "thunderstorm",
+    SNOW:          "snow",
+    RAIN:          "rain",
+    FOG:           "fog",
+    WINDY:         "windy",
+    CLOUDY_DAY:    "cloudy_day",
+    CLOUDY_NIGHT:  "cloudy_night",
+    SUNNY:         "sunny",
+    NIGHT:         "night",
+};
+
+function resolveWeatherState(condition, isDay) {
+    const c = condition.toLowerCase();
+
+    if (c.includes("thunder") || c.includes("storm"))           return WeatherState.THUNDERSTORM;
+    if (c.includes("snow") || c.includes("blizzard") ||
+        c.includes("sleet") || c.includes("ice"))               return WeatherState.SNOW;
+    if (c.includes("rain") || c.includes("drizzle") ||
+        c.includes("shower"))                                    return WeatherState.RAIN;
+    if (c.includes("fog") || c.includes("mist") ||
+        c.includes("haze") || c.includes("overcast"))           return WeatherState.FOG;
+    if (c.includes("wind") || c.includes("gale"))               return WeatherState.WINDY;
+    if (c.includes("cloud"))
+        return isDay ? WeatherState.CLOUDY_DAY : WeatherState.CLOUDY_NIGHT;
+
+    return isDay ? WeatherState.SUNNY : WeatherState.NIGHT;
+}
+
+const BACKGROUND_MAP = {
+    [WeatherState.THUNDERSTORM]:  "linear-gradient(to bottom, #1a1a2e, #4a0e0e)",
+    [WeatherState.SNOW]:          "linear-gradient(to bottom, #dfe9f3, #a8c0cc)",
+    [WeatherState.RAIN]:          "linear-gradient(to bottom, #4a6fa5, #2c3e50)",
+    [WeatherState.FOG]:           "linear-gradient(to bottom, #bdc3c7, #95a5a6)",
+    [WeatherState.WINDY]:         "linear-gradient(to bottom, #a8c0cc, #6b8fa3)",
+    [WeatherState.CLOUDY_DAY]:    "linear-gradient(to bottom, #89a4c7, #b8cce4)",
+    [WeatherState.CLOUDY_NIGHT]:  "linear-gradient(to bottom, #2c3e50, #3d5166)",
+    [WeatherState.SUNNY]:         "linear-gradient(to bottom, #56ccf2, #2f80ed)",
+    [WeatherState.NIGHT]:         "linear-gradient(to bottom, #0f0c29, #302b63)",
+};
+
+// ─── Weather Scene Renderer ──────────────────────────────────────────────────
+
+function rand(min, max) { return Math.random() * (max - min) + min; }
+
+function buildSunnyScene() {
+    const rays = [];
+    for (let i = 0; i < 12; i++) {
+        const angle = i * 30;
+        const delay = (i * 0.15).toFixed(2);
+        const len = i % 2 === 0 ? 90 : 65;
+        const x2 = (160 + len * Math.cos((angle - 90) * Math.PI / 180)).toFixed(1);
+        const y2 = (130 + len * Math.sin((angle - 90) * Math.PI / 180)).toFixed(1);
+        rays.push(`<line x1="160" y1="130" x2="${x2}" y2="${y2}"
+            stroke="rgba(255,230,100,0.85)" stroke-width="4" stroke-linecap="round"
+            style="transform-origin:160px 130px; animation:sunRayPulse 2.4s ease-in-out ${delay}s infinite;"/>`);
+    }
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
+        viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      <circle cx="160" cy="130" r="54" fill="rgba(255,240,120,0.18)"
+        style="transform-origin:160px 130px; animation:sunHaloBreathe 3s ease-in-out infinite;"/>
+      <circle cx="160" cy="130" r="44" fill="rgba(255,220,60,0.95)"/>
+      ${rays.join("\n")}
+    </svg>`;
+}
+
+function buildNightScene() {
+    const stars = [];
+    for (let i = 0; i < 45; i++) {
+        const cx = rand(20, 780).toFixed(1);
+        const cy = rand(10, 420).toFixed(1);
+        const r  = rand(0.8, 2.5).toFixed(1);
+        const delay = rand(0, 4).toFixed(2);
+        const dur   = rand(1.8, 4.0).toFixed(2);
+        stars.push(`<circle cx="${cx}" cy="${cy}" r="${r}" fill="rgba(220,235,255,0.95)"
+            style="animation:starTwinkle ${dur}s ease-in-out ${delay}s infinite;"/>`);
+    }
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
+        viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <mask id="moonMask">
+          <rect width="800" height="600" fill="white"/>
+          <circle cx="655" cy="80" r="42" fill="black"/>
+        </mask>
+      </defs>
+      ${stars.join("\n")}
+      <circle cx="630" cy="100" r="52" fill="rgba(210,225,255,0.92)"
+        mask="url(#moonMask)"
+        style="animation:moonGlow 4s ease-in-out infinite;"/>
+    </svg>`;
+}
+
+function buildRainScene() {
+    const streaks = [];
+    for (let i = 0; i < 60; i++) {
+        const x1 = rand(0, 820).toFixed(1);
+        const y1 = rand(-200, -10).toFixed(1);
+        const len = rand(18, 35);
+        const x2  = (parseFloat(x1) + len * Math.sin(20 * Math.PI / 180)).toFixed(1);
+        const y2  = (parseFloat(y1) + len * Math.cos(20 * Math.PI / 180)).toFixed(1);
+        const delay = rand(0, 2.5).toFixed(2);
+        const dur   = rand(0.55, 0.95).toFixed(2);
+        const opacity = rand(0.35, 0.75).toFixed(2);
+        const sw = rand(0.8, 1.6).toFixed(1);
+        streaks.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
+            stroke="rgba(174,214,241,${opacity})" stroke-width="${sw}" stroke-linecap="round"
+            style="animation:rainFall ${dur}s linear ${delay}s infinite;"/>`);
+    }
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
+        viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      ${streaks.join("\n")}
+    </svg>`;
+}
+
+function buildThunderstormScene() {
+    const streaks = [];
+    for (let i = 0; i < 90; i++) {
+        const x1 = rand(0, 820).toFixed(1);
+        const y1 = rand(-200, -10).toFixed(1);
+        const len = rand(22, 42);
+        const x2  = (parseFloat(x1) + len * Math.sin(25 * Math.PI / 180)).toFixed(1);
+        const y2  = (parseFloat(y1) + len * Math.cos(25 * Math.PI / 180)).toFixed(1);
+        const delay = rand(0, 1.8).toFixed(2);
+        const dur   = rand(0.4, 0.75).toFixed(2);
+        const opacity = rand(0.4, 0.8).toFixed(2);
+        const sw = rand(0.8, 2.0).toFixed(1);
+        streaks.push(`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
+            stroke="rgba(140,180,220,${opacity})" stroke-width="${sw}" stroke-linecap="round"
+            style="animation:rainFall ${dur}s linear ${delay}s infinite;"/>`);
+    }
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
+        viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      ${streaks.join("\n")}
+      <rect x="0" y="0" width="800" height="600" fill="rgba(220,235,255,1)"
+        style="animation:lightningFlash 7s ease-in-out 0s infinite;"/>
+      <polyline points="400,20 385,120 405,120 388,240 410,240 380,340"
+        fill="none" stroke="rgba(255,255,200,0.95)" stroke-width="3"
+        stroke-linejoin="round" stroke-linecap="round"
+        style="animation:lightningFlash 7s ease-in-out 0.05s infinite;"/>
+    </svg>`;
+}
+
+function buildSnowScene() {
+    const flakes = [];
+    for (let i = 0; i < 50; i++) {
+        const cx  = rand(0, 800).toFixed(1);
+        const r   = rand(2, 6).toFixed(1);
+        const delay = rand(0, 5).toFixed(2);
+        const dur   = rand(4, 9).toFixed(2);
+        const opacity = rand(0.5, 0.9).toFixed(2);
+        flakes.push(`<circle cx="${cx}" cy="-10" r="${r}" fill="rgba(240,248,255,${opacity})"
+            style="animation:snowFall ${dur}s ease-in-out ${delay}s infinite;"/>`);
+    }
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
+        viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      ${flakes.join("\n")}
+    </svg>`;
+}
+
+function buildFogScene() {
+    const yPositions = [80, 180, 270, 360, 430, 520];
+    const heights    = [60, 80, 55, 70, 65, 50];
+    const durations  = [18, 22, 25, 20, 28, 24];
+    const delays     = [0, -6, -12, -4, -9, -16];
+    const opacities  = [0.4, 0.3, 0.45, 0.35, 0.3, 0.4];
+    const bands = yPositions.map((y, i) =>
+        `<ellipse cx="400" cy="${y}" rx="600" ry="${heights[i]}"
+            fill="rgba(200,210,215,${opacities[i]})"
+            style="animation:fogDrift ${durations[i]}s ease-in-out ${delays[i]}s infinite;"/>`
+    );
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
+        viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      ${bands.join("\n")}
+    </svg>`;
+}
+
+function buildCloudyDayScene() {
+    function cloudGroup(baseX, baseY, scale, opacity, dur, delay) {
+        const circles = [
+            { cx: 0, cy: 0, r: 40 }, { cx: 45, cy: -15, r: 50 },
+            { cx: 95, cy: -5, r: 42 }, { cx: 140, cy: 10, r: 36 }, { cx: -35, cy: 10, r: 32 },
+        ];
+        const c = circles.map(p =>
+            `<circle cx="${baseX + p.cx * scale}" cy="${baseY + p.cy * scale}" r="${p.r * scale}" fill="rgba(230,240,255,${opacity})"/>`
+        ).join("");
+        return `<g style="animation:cloudDrift ${dur}s linear ${delay}s infinite;">${c}</g>`;
+    }
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
+        viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      ${cloudGroup(-250, 80,  1.0, 0.75, 45, 0)}
+      ${cloudGroup(-400, 200, 0.7, 0.55, 60, -20)}
+      ${cloudGroup(-150, 320, 0.85, 0.45, 38, -10)}
+      ${cloudGroup(-350, 450, 0.6, 0.4, 55, -30)}
+    </svg>`;
+}
+
+function buildCloudyNightScene() {
+    const stars = [];
+    for (let i = 0; i < 30; i++) {
+        const cx = rand(20, 780).toFixed(1);
+        const cy = rand(10, 350).toFixed(1);
+        const r  = rand(0.8, 2.0).toFixed(1);
+        const delay = rand(0, 4).toFixed(2);
+        const dur   = rand(2, 4.5).toFixed(2);
+        stars.push(`<circle cx="${cx}" cy="${cy}" r="${r}" fill="rgba(200,215,240,0.8)"
+            style="animation:starTwinkle ${dur}s ease-in-out ${delay}s infinite;"/>`);
+    }
+    function darkCloud(baseX, baseY, scale, opacity, dur, delay) {
+        const circles = [
+            { cx: 0, cy: 0, r: 40 }, { cx: 45, cy: -15, r: 50 },
+            { cx: 95, cy: -5, r: 42 }, { cx: 140, cy: 10, r: 36 }, { cx: -35, cy: 10, r: 32 },
+        ];
+        const c = circles.map(p =>
+            `<circle cx="${baseX + p.cx * scale}" cy="${baseY + p.cy * scale}" r="${p.r * scale}" fill="rgba(40,55,80,${opacity})"/>`
+        ).join("");
+        return `<g style="animation:cloudDrift ${dur}s linear ${delay}s infinite;">${c}</g>`;
+    }
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
+        viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      ${stars.join("\n")}
+      ${darkCloud(-250, 120, 1.0, 0.85, 55, -5)}
+      ${darkCloud(-400, 280, 0.75, 0.70, 70, -25)}
+      ${darkCloud(-150, 400, 0.9, 0.65, 42, -15)}
+    </svg>`;
+}
+
+function buildWindyScene() {
+    const yPositions = [60, 120, 190, 250, 310, 380, 430, 480, 530, 570, 200, 340];
+    const widths     = [300, 450, 380, 500, 420, 350, 480, 320, 460, 390, 510, 370];
+    const opacities  = [0.5, 0.4, 0.6, 0.35, 0.5, 0.45, 0.55, 0.4, 0.5, 0.35, 0.45, 0.6];
+    const durations  = [3.5, 4.2, 3.0, 5.0, 3.8, 4.5, 3.2, 4.8, 3.6, 5.2, 4.0, 3.4];
+    const delays     = [0, -1.5, -0.8, -2.5, -1.0, -3.2, -0.4, -2.0, -1.8, -0.6, -3.0, -1.2];
+    const lines = yPositions.map((y, i) => {
+        const w = widths[i];
+        const d = `M -${(w * 0.1).toFixed(0)},${y} C ${(w * 0.3).toFixed(0)},${y - 25} ${(w * 0.6).toFixed(0)},${y + 20} ${w + 100},${y - 10}`;
+        const sw = rand(1.5, 3.5).toFixed(1);
+        return `<path d="${d}" fill="none" stroke="rgba(180,205,220,${opacities[i]})" stroke-width="${sw}"
+            stroke-linecap="round"
+            style="animation:windSweep ${durations[i]}s ease-in-out ${delays[i]}s infinite;"/>`;
+    });
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"
+        viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      ${lines.join("\n")}
+    </svg>`;
+}
+
+function renderWeatherScene(state) {
+    const container = document.getElementById("weather-scene");
+    if (!container) return;
+    container.innerHTML = "";
+    const builders = {
+        [WeatherState.SUNNY]:        buildSunnyScene,
+        [WeatherState.NIGHT]:        buildNightScene,
+        [WeatherState.RAIN]:         buildRainScene,
+        [WeatherState.THUNDERSTORM]: buildThunderstormScene,
+        [WeatherState.SNOW]:         buildSnowScene,
+        [WeatherState.FOG]:          buildFogScene,
+        [WeatherState.CLOUDY_DAY]:   buildCloudyDayScene,
+        [WeatherState.CLOUDY_NIGHT]: buildCloudyNightScene,
+        [WeatherState.WINDY]:        buildWindyScene,
+    };
+    const builder = builders[state];
+    if (builder) container.innerHTML = builder();
+}
+
 //Recent city
 function saveCity(city) {
     let cities = localStorage.getItem("recentCities");
@@ -69,6 +334,8 @@ function updateTime(tz) {
 // update UI state
 async function updateUIState(weather) {
     currentWeather = weather;
+    document.body.style.background = BACKGROUND_MAP[weather.weatherState];
+    renderWeatherScene(weather.weatherState);
     console.log(weather);
     
     if (timeInterval) clearInterval(timeInterval);
@@ -220,6 +487,7 @@ async function getWeatherFromAPIByCity(city) {
         uv: data.current.uv,
         weatherIcon: data.current.condition.icon,
         weatherCondition: data.current.condition.text,
+        weatherState: resolveWeatherState(data.current.condition.text, data.current.is_day),
         tz: data.location.tz_id,
         forecast: data.forecast.forecastday,
         hourly: data.forecast.forecastday[0].hour,
@@ -255,6 +523,7 @@ async function getWeatherFromAPIByLatLong(lat, long) {
         uv: data.current.uv,
         weatherIcon: data.current.condition.icon,
         weatherCondition: data.current.condition.text,
+        weatherState: resolveWeatherState(data.current.condition.text, data.current.is_day),
         tz: data.location.tz_id,
         forecast: data.forecast.forecastday,
         hourly: data.forecast.forecastday[0].hour,
