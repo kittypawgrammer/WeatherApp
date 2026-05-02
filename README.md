@@ -3,6 +3,8 @@
 A responsive and interactive Weather Forecast Application built using **HTML**, **Tailwind CSS**, and **Vanilla JavaScript**.  
 This application allows users to search weather forecasts by city name or current location and view current weather conditions along with a 5-day extended forecast.
 
+🔗 **GitHub:** [kittypawgrammer/WeatherApp](https://github.com/kittypawgrammer/WeatherApp)
+
 ---
 
 ## 🚀 Features
@@ -55,6 +57,22 @@ Displays user-friendly error messages for:
 - Empty inputs
 - API issues
 - Location access denied
+
+---
+
+## 📸 Screenshots
+
+### Desktop
+
+| Sunny | °F Toggle | Location Denied |
+|-------|-----------|-----------------|
+| ![Desktop Sunny](src/assets/screenshots/desktop-sunny.png) | ![Fahrenheit Toggle](src/assets/screenshots/desktop-fahrenheit.png) | ![Location Denied](src/assets/screenshots/desktop-location-denied.png) |
+
+### Mobile
+
+| Rain Alert | Frost Advisory | Sunny |
+|------------|----------------|-------|
+| ![Mobile Rain Alert](src/assets/screenshots/mobile-rain-alert.png) | ![Mobile Frost Alert](src/assets/screenshots/mobile-frost-alert.png) | ![Mobile Sunny](src/assets/screenshots/mobile-sunny.png) |
 
 ---
 
