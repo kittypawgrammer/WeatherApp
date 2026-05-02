@@ -74,6 +74,8 @@ async function updateUIState(weather) {
     }, 1000);
 
     document.getElementById("city-name").innerText = `${weather.cityName}, ${weather.country}`;
+    document.getElementById("temperature").innerText = `${weather.tempC}%`;
+    document.getElementById("feels-like").innerText = `Feels-like: ` + `${weather.feelsLikeC}%`;
     document.getElementById("sunrise").innerText = weather.sunrise;
     document.getElementById("sunset").innerText = weather.sunset;
     document.getElementById("humidity").innerText = `${weather.humidity}%`;
